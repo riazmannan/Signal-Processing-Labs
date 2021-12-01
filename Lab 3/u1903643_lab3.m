@@ -62,7 +62,8 @@ function Q1 = Q1Fun()
         Q1.fRange = []; % Q1f
         
         % Q1a
-        t = 0:0.025:7.475;
+        Ts1 = 0.025;
+        t = 0:Ts1:7.475;
         Q1.Obs = [(1-exp(-0.18*t))' ,(exp(-0.50*t).*sin(15.08*t))', (sin(41.05*t))'];
         
         % Q1b
@@ -75,6 +76,38 @@ function Q1 = Q1Fun()
         Q1.yHat = (A1*(1-exp(-0.18*t)) + B1*exp(-0.50*t).*sin(15.08*t) + C1*sin(41.05*t))';
         
         % Q1d
+        Q1.mse = immse(Q1.yHat, y1);
+        
+        % Q1e
+        figure;
+        grid on;
+        plot(t, y1, 'b');
+        hold on;
+        plot(t, Q1.yHat, 'r');
+        legend('Actual', 'Predicted');
+        xlabel('Time (s)');
+        ylabel('Temperature (°C)');
+        title('Q1e ~ Comparison of Predictions with Actual Sensor Values ~ u1903643');
+        
+        % Q1f
+        % i
+        Q1.yFFT = fft(y1);
+        % ii
+        Q1.yHatFFT = fft(Q1.yHat);
+        % iii
+        Q1.fRange = linspace(0, (1/Ts1)-1, 300);
+        % iv
+        figure;
+        grid on;
+        plot(Q1.fRange, abs(Q1.yFFT));
+        hold on;
+        plot( Q1.fRange, abs(Q1.yHatFFT));
+        legend('Actual', 'Predicted');
+        title('Q1f.iv ~ Comparison FFT Outputs of Predictions with Actual Sensor Values ~ u1903643');
+ 
+        
+        
+        
         
         
     else
@@ -96,8 +129,8 @@ function Q2 = Q2Fun()
 
     % DO NOT REMOVE THIS IF STATEMENT
     % WRITE YOUR CODE INSIDE THIS IF STATEMENT
-    if exist('u<ID>_lab3_signals.mat', 'file') == 2 % Update with your student ID
-        load('u<ID>_lab3_signals.mat', 'y2', 'x2') % Update with your student ID
+    if exist('u1903643_lab3_signals.mat', 'file') == 2 % Update with your student ID
+        load('u1903643_lab3_signals.mat', 'y2', 'x2') % Update with your student ID
 
         Q2.Obs = []; % Q2a
         Q2.W = []; % Q2c
@@ -106,6 +139,23 @@ function Q2 = Q2Fun()
         Q2.w = []; % Q2g
         Q2.var1 = []; % Q2g
         Q2.var2 = []; % Q2g
+        
+        % 2a
+        A2 = x2(1:end);
+        B2 = [0; x2(1:end-1)];
+        C2 = [zeros(5, 1); x2(1:end-5)];
+        D2 = [zeros(8, 1); x2(1:end-8)];
+        Q2.Obs = [A2 B2 C2 D2];
+        
+        k2 = 3.9;
+        s2 = 54;
+        unchanched_s = ones(176-s2, 1);
+        increased_s = ones(54, 1)/k2; 
+        Q2.W = [unchanched_s; increased_s];
+        
+    
+        
+        
         
     else
         % LEAVE THESE DEFAULT ARGUMENTS EMPTY
